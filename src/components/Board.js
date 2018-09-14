@@ -5,7 +5,7 @@ class Board extends Component {
 
   constructor (props) {
     super(props)
-    const dimension = 25
+    const dimension = 50
     this.state = {
       dimension,
       cells: this.generateBoard(dimension),
@@ -14,7 +14,7 @@ class Board extends Component {
   }
 
   componentDidMount(){
-    setTimeout(this.generateNewBoard, 1000)
+    setInterval(this.generateNewBoard, 1000)
   }
 
   generateBoard = (dimension) => {
@@ -34,21 +34,56 @@ class Board extends Component {
   }
 
   getCellStatus = (currentStatus, index, cells) => {
-      let cellPosition = index+1
-      let top, bottom, rightSide, leftSide
-      // find cell orientation
-      if (cellPosition <= this.state.dimension){
-        top = true
-      } else if (cellPosition % this.state.dimension === 1) {
-        leftSide = true
-      } else if (cellPosition % this.state.dimension === 0) {
-        rightSide = true
-      } else if (cellPosition >= (this.state.cells.length - this.state.dimension)) {
-        bottom = true
-      }
+    const orientation = this.findCellOrientation(index, cells)
+    const liveNeighbors = this.findLiveNeighbors(orientation,index,cells)
+    if (currentStatus === 1 && (liveNeighbors === 2 || liveNeighbors === 3)) {
+      return 1
+    } else if (currentStatus===0 && liveNeighbors===3){
+      return 1
+    } else {
+      return 0
+    }
+  }
 
-      // find neighbor count
+  findCellOrientation = (indexValue, array) => {
+    let cellPosition = indexValue+1
+    let orientation = {}
 
+    if (cellPosition <= this.state.dimension){
+      orientation.missingTop = true
+    }
+    if (cellPosition % this.state.dimension === 1) {
+      orientation.missingLeftSide = true
+    }
+    if (cellPosition % this.state.dimension === 0) {
+      orientation.missingRightSide = true
+    }
+    if (cellPosition >= (array.length - this.state.dimension + 1 )) {
+      orientation.missingBottom = true
+    }
+    return orientation
+  }
+
+  findLiveNeighbors = (orientationObj,indexValue, cellsArray) => {
+    let liveNeighbors = 0
+
+    !orientationObj.missingTop && (liveNeighbors += cellsArray[indexValue-this.state.dimension])
+    !orientationObj.missingBottom && (liveNeighbors += cellsArray[indexValue+this.state.dimension])
+    !orientationObj.missingRightSide && (liveNeighbors += cellsArray[indexValue+1])
+    !orientationObj.missingLeftSide && (liveNeighbors += cellsArray[indexValue-1])
+    if (!orientationObj.missingLeftSide && !orientationObj.missingBottom) {
+      liveNeighbors += cellsArray[indexValue+this.state.dimension-1]
+    }
+    if (!orientationObj.missingLeftSide && !orientationObj.missingTop){
+      liveNeighbors += cellsArray[indexValue-this.state.dimension-1]
+    }
+    if (!orientationObj.missingRightSide && !orientationObj.missingBottom) {
+      liveNeighbors += cellsArray[indexValue+this.state.dimension+1]
+    }
+    if (!orientationObj.missingRightSide && !orientationObj.missingTop){
+      liveNeighbors += cellsArray[indexValue-this.state.dimension+1]
+    }
+    return liveNeighbors
   }
 
 
@@ -59,6 +94,7 @@ class Board extends Component {
   }
 
   render() {
+    console.log(this.state.cells)
     const styles = {
       gridTemplateColumns:`repeat(${this.state.dimension},${100/this.state.dimension}%)`,
       gridTemplateRows:`repeat(${this.state.dimension},${100/this.state.dimension}%)`,
