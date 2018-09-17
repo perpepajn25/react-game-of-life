@@ -102,6 +102,10 @@ class Board extends Component {
     return (
       <div className="container" style={styles}>
         {this.generateCells()}
+        <ul>
+        <li> Generations: {this.state.generations} </li>
+        <li> Population: {this.state.cells.reduce((a, b) => a + b, 0)} </li>
+      </ul>
       </div>
     );
   }

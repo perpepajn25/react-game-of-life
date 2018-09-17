@@ -10,3 +10,12 @@
   height: 100%;
   outline: 1px solid #b3b3b3;
 }
+
+.banner {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.content {
+  text-align: center;
+}
