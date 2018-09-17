@@ -9,7 +9,9 @@ class App extends Component {
         <div className='banner'>
           <h1> Game of life </h1>
         </div>
-        <Board />
+        <div className='banner'>
+          <Board />
+        </div>
       </div>
     );
   }

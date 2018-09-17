@@ -90,6 +90,7 @@ class Board extends Component {
   generateCells = () => {
     return this.state.cells.map((value) => {
       return <Cell color={value === 0 ? '#666666':'#ffc000'}/>
+      // #ffc000
     })
   }
 
